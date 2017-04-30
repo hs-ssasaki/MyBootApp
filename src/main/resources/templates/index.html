@@ -6,14 +6,38 @@
 		content="text/html" charset="UTF-8"/>
 	<style>
 	h1 { font-size:18pt; font-weight:bold; color:gray;}
-	body { font-size:13pt;, color:gray; margin:5px 25px; }
+	body { font-size:13pt; color:gray; margin:5px 25px; }
+	pre { font-size:13pt; color:gray; padding:5px 10px; border:1px solid gray; }
 	</style>
 </head>
 <body>
 	<h1>Hello page</h1>
-	<p th:text="${msg}">Please wait ...</p>
+	<pre th:text="${msg}">Please wait ...</pre>
 	<form method="post" action="/">
-		<input type="text" name="text1" th:value="${value}" />
+		<div>
+		<input type="checkbox" id="check1" name="check1" />
+		<label for="check1">チェック</label>
+		</div>	
+		<div>		
+		<input type="radio" id="radioA" name="radio1" value="male" />
+		<label for="radioA">男性</label>
+		</div>
+		<div>		
+		<input type="radio" id="radioB" name="radio1" value="female" />
+		<label for="radioB">女性</label>
+		</div>
+		<div>
+		<select id="select1" name="select1" size="4">
+			<option value="Windows">Windows</option>
+			<option value="Linux">Linux</option>
+			<option value="Mac">Mac</option>
+		</select>
+		<select id="select2" name="select2" size="4" multiple="multiple">
+			<option value="Android">Android</option>
+			<option value="iPhone">iPhone</option>
+			<option value="Windows Phone">Windows Phone</option>
+		</select>
+		</div>
 		<input type="submit" value="Click" />
 	</form>
 </body>
