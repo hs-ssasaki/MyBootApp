@@ -18,7 +18,7 @@ public class HelloController {
 	
 	@RequestMapping(value="/", method=RequestMethod.POST)
 	// @RequestParam(value=フォーム名, required=false) で非必須パラメータの指定ができる 
-	public ModelAndView send(
+	public ModelAndView send( 
 			@RequestParam(value="check1", required=false)boolean check1,
 			@RequestParam(value="radio1", required=false)String radio1,
 			@RequestParam(value="select1", required=false)String select1,
@@ -42,5 +42,15 @@ public class HelloController {
 		mav.setViewName("index");
 		mav.addObject("msg", res);
 		return mav;
+	}
+	
+	@RequestMapping("/other")
+	public String other() {
+		return "redirect:/";
+	}
+	
+	@RequestMapping("/home")
+	public ModelAndView home() {
+		return new ModelAndView("forward:/");
 	}
 }
