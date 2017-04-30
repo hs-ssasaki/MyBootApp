@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<title>top page</title>
 	<meta http-equiv="Content-Type"
@@ -11,6 +11,10 @@
 </head>
 <body>
 	<h1>Hello page</h1>
-	<p class="msg" th:text="${msg}">This is Thymeleaf sample page</p>
+	<p th:text="${msg}">Please wait ...</p>
+	<form method="post" action="/">
+		<input type="text" name="text1" th:value="${value}" />
+		<input type="submit" value="Click" />
+	</form>
 </body>
 </html>
