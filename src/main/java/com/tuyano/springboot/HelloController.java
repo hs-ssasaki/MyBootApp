@@ -1,56 +1,80 @@
 package com.tuyano.springboot;
 
-import org.springframework.stereotype.Controller;
+import java.util.ArrayList;
+
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller
+@RestController
 public class HelloController {
+	@RequestMapping("/{id}/{month}/{num}/{tax}")
+	public ModelAndView index(@PathVariable int id, @PathVariable int month, @PathVariable int num, @PathVariable int tax, ModelAndView mav) {
+		mav.setViewName("index");
+		mav.addObject("msg", "current data.");
+		mav.addObject("html_msg", "message 1<br/>message 2<br/>message 3");
+		DataObject obj = new DataObject(123, "hanako", "hanako@flower");
+		mav.addObject("object", obj);
+		
+		mav.addObject("id", id);
+		mav.addObject("check", id % 2 == 0);
+		mav.addObject("trueVal", "Even number");
+		mav.addObject("falseVal", "Odd number");
+		
+		mav.addObject("check_num", Math.floor(month / 3));
+		
+		ArrayList<String[]> data = new ArrayList<String[]>();
+		data.add(new String[]{"taro", "taro@yamada", "090-999-9999"});
+		data.add(new String[]{"hanako", "hanako@flower", "080-888-8888"});
+		data.add(new String[]{"sachiko", "sachiko@happy", "080-999-9999"});
+		mav.addObject("data", data);
+	
+		ArrayList<DataObject> dataObjectList = new ArrayList<DataObject>();
+		dataObjectList.add(new DataObject(0, "taro", "taro@yamada"));
+		dataObjectList.add(new DataObject(1, "hanako", "hanako@flower"));
+		dataObjectList.add(new DataObject(2, "sachiko", "sachiko@happy"));
+		mav.addObject("dataObjectList", dataObjectList);
+		mav.addObject("expression", "num >= dataObjectList.size() ? 0 : num");
+		
+		mav.addObject("tax", tax);
+		return mav;
+	}
+}
 
-	@RequestMapping(value="/", method=RequestMethod.GET)
-	public ModelAndView index(ModelAndView mav) {
-		mav.setViewName("index");
-		mav.addObject("msg", "フォームを送信してください");
-		return mav;
-	}
+class DataObject {
+	private int id;
+	private String name;
+	private String value;
 	
-	@RequestMapping(value="/", method=RequestMethod.POST)
-	// @RequestParam(value=フォーム名, required=false) で非必須パラメータの指定ができる 
-	public ModelAndView send( 
-			@RequestParam(value="check1", required=false)boolean check1,
-			@RequestParam(value="radio1", required=false)String radio1,
-			@RequestParam(value="select1", required=false)String select1,
-			@RequestParam(value="select2", required=false)String[] select2,
-			ModelAndView mav) {
-		String res = "";
-		try {
-			res = "check1: " + check1 +
-					" radio1: " + radio1 +
-					" select1: " + select1 +
-					" select2:";
-		} catch (NullPointerException e) {}
-		try {
-			res += select2[0];
-			for(int i = 1; i < select2.length; i++) {
-				res += ", " + select2[i];
-			}
-		}catch (NullPointerException e) {
-			res += "null";
-		}
-		mav.setViewName("index");
-		mav.addObject("msg", res);
-		return mav;
+	public DataObject(int id, String name, String value) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.value = value;
 	}
-	
-	@RequestMapping("/other")
-	public String other() {
-		return "redirect:/";
+
+	public int getId() {
+		return id;
 	}
-	
-	@RequestMapping("/home")
-	public ModelAndView home() {
-		return new ModelAndView("forward:/");
+
+	public void setId(int id) {
+		this.id = id;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}	
 }

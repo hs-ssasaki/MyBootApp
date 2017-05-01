@@ -8,37 +8,128 @@
 	h1 { font-size:18pt; font-weight:bold; color:gray;}
 	body { font-size:13pt; color:gray; margin:5px 25px; }
 	pre { font-size:13pt; color:gray; padding:5px 10px; border:1px solid gray; }
+	tr { margin:5px; }
+	th { padding:5px; color:white; background:darkgray; }
+	td { padding:5px; color:black; background:#e0e0ff; }
 	</style>
+	
+	<!-- インライン処理（Javascript） -->
+	<script th:inline="javascript">
+	function action() {
+		var val = document.getElementById("input_text").value;
+		var res = parseInt(val * ((100 + /*[[${tax}]]*/) / 100));
+		document.getElementById("output_text").innerHTML = "include tax: " + res;		
+	}
+	</script>
 </head>
 <body>
-	<h1>Hello page</h1>
-	<pre th:text="${msg}">Please wait ...</pre>
-	<form method="post" action="/">
-		<div>
-		<input type="checkbox" id="check1" name="check1" />
-		<label for="check1">チェック</label>
-		</div>	
-		<div>		
-		<input type="radio" id="radioA" name="radio1" value="male" />
-		<label for="radioA">男性</label>
-		</div>
-		<div>		
-		<input type="radio" id="radioB" name="radio1" value="female" />
-		<label for="radioB">女性</label>
-		</div>
-		<div>
-		<select id="select1" name="select1" size="4">
-			<option value="Windows">Windows</option>
-			<option value="Linux">Linux</option>
-			<option value="Mac">Mac</option>
-		</select>
-		<select id="select2" name="select2" size="4" multiple="multiple">
-			<option value="Android">Android</option>
-			<option value="iPhone">iPhone</option>
-			<option value="Windows Phone">Windows Phone</option>
-		</select>
-		</div>
-		<input type="submit" value="Click" />
-	</form>
+	<h1 th:text="#{content.title}">Hello page</h1>
+
+	<h2>サンプルクエリ</h2>
+	<p>http://localhost:8080/3/12/6/8</p>
+	<p>http://localhost:8080/偶数か奇数/月/テーブル行番号/税率（％）</p>
+	
+	<!-- 変数式の中にOGNL式を書ける。ほぼJavaの式と同等 -->
+	<h2>変数式</h2>
+	<p th:text="${new java.util.Date().toString()}"></p>
+	
+	<!-- よく使うクラスがユーティリティオブジェクトが定義されている #string, #number, #bools, #dates, #objects, #arrays, #lists, #sets, #maps -->
+	<h2>ユーティリティオブジェクト</h2>
+	<p th:text="${#dates.format(new java.util.Date(), 'dd/MMM/yyyy HH:mm')}"></p>
+	<p th:text="${#numbers.formatInteger(1234,7)}"></p>
+	<p th:text="${#strings.toUpperCase('Welcome to Spring.')}"></p>
+	
+	<!-- クエリパラメータにアクセスするための変数、paramが用意されている。変数式の中で直接使える。以下の記述で、コントローラを使わずに、localhost:8080/?id=x&name=y のパラメータを取得できる -->
+<!-- 	<p>クエリパラメータ変数</p> -->
+<!-- 	<p th:text="'from parameter... id=' + ${param.id[0] + ' ,name=' + param.name[0]}"></p> -->
+	
+	<!-- メッセージ式 #{プロパティ名} で、プロパティファイルの値を読み込める。プロパティファイルはデフォルト /resources/messages.properties -->
+	<h2>プロパティファイルの読み込み</h2>
+	<p th:text="#{content.message}"></p>
+	
+	<!-- リンク式 @{} で、リンクテキストを指定できる。通常のテキストで書くより、中で変数式の展開などができるので便利 -->
+<!-- 	<p>リンク式</p> -->
+<!-- 	<p><a th:href="@{'/home/' + ${param.id[0]}}">link</a></p> -->
+	
+	<!-- オブジェクトプロパティへのアクセスの簡易化。th:object="${オブジェクト}" でオブジェクトを指定すれば、そのブロック内では *{プロパティ名} だけでオブジェクトのプロパティにアクセスできる  -->
+	<h2>オブジェクトプロパティアクセスの簡易化</h2>
+	<table th:object="${object}">
+		<tr><th>ID</th><td th:text="*{id}"></td></tr>
+		<tr><th>NAME</th><td th:text="*{name}"></td></tr>
+		<tr><th>MAIL</th><td th:text="*{value}"></td></tr>
+	</table>
+	
+	<!-- リテラル式 "| テキストの内容 |" で、テキストの中に直接変数式を書き込める。 + でつなぎ合わせなくて良い -->	
+	<h2>リテラル式</h2>
+	<div th:object="${object}">
+		<p th:text="|my name is *{name}. mail address is *{value}. |"></p>
+	</div>
+	
+	<!-- コントローラから受け取ったHTMLコードをそのまま出力したい場合は、th:utext を使う -->
+	<h2>コントローラで作成したHTMLコードの出力</h2>
+	<p th:utext="${html_msg}">message.</p>
+	<hr/>
+	
+	<!-- 制御構文 (?, th:if, th:switch, th:each) -->
+	<h2>制御構文</h2>
+	<p th:text="${id} + ' is ' + (${check} ? ${trueVal} : ${falseVal})"></p>
+
+	<p th:if="${check}" th:text="${id} + ' is ' + ${trueVal}"></p>
+	<p th:unless="${check}" th:text="${id} + ' is ' + ${falseVal}"></p>
+	
+	<div th:switch="${check_num}">
+		<p th:case="0" th:text="Winter"></p>
+		<p th:case="1" th:text="Spring"></p>
+		<p th:case="2" th:text="Summer"></p>
+		<p th:case="3" th:text="Autumn"></p>
+		<p th:case="4" th:text="Winter"></p>
+		<p th:case="*">...?</p>
+	</div>
+	
+	<table>
+		<tr>
+			<th>NAME</th>
+			<th>MAIL</th>
+			<th>TEL</th>
+		</tr>
+		<tr th:each="obj:${data}">
+			<td th:text="${obj[0]}"></td>
+			<td th:text="${obj[1]}"></td>
+			<td th:text="${obj[2]}"></td>
+		</tr>
+	</table>
+	<hr/>
+		
+	<!-- プリプロセッサ, __${変数式}__ とアンダースコアで囲んだ式は、テンプレートエンジンで値を確定する前の式として評価される。以下の例では、囲った方はコントローラから渡された文字列を式として評価している。 -->
+	<h2>プリプロセッサ</h2>
+	<p th:text="|expression [ ${expression} ]|"></p>
+	<table th:object="${dataObjectList.get(__${expression}__)}">
+		<tr><th>ID</th><td th:text="*{id}"></td></tr>
+		<tr><th>NAME</th><td th:text="*{name}"></td></tr>
+		<tr><th>MAIL</th><td th:text="*{value}"></td></tr>
+	</table>
+	
+	<!-- インライン処理、 th:inline="text" のあるタグの内部は、直接式を書き込める。変数式の前後は [[ ]] で囲む。<td>部分の記述が th:text では無くなっている -->
+	<hr/>
+	<h2>インライン処理(テキスト)</h2>
+	<table th:inline="text">
+		<tr>
+			<th>NAME</th>
+			<th>MAIL</th>
+			<th>TEL</th>
+		</tr>
+		<tr th:each="obj:${data}">
+			<td>[[${obj[0]}]]</td>
+			<td>[[${obj[1]}]]</td>
+			<td>[[${obj[2]}]]</td>
+		</tr>
+	</table>
+	
+	<!-- インライン処理（Javascript）、 th:inline="javascript" で囲み、変数式は /*[[ ]]*/ で囲む ※<head><script>参照 -->
+	<hr/>
+	<h2>インライン処理（javascript）</h2>
+	<p id="output_text"></p>
+	<input type="text" id="input_text" />
+	<button onclick="action()">click</button>
 </body>
 </html>
