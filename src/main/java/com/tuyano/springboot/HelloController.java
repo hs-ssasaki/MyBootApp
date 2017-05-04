@@ -4,6 +4,8 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,13 +17,30 @@ public class HelloController {
 	@Autowired
 	MyDataRepository myDataRepository;
 	
+	/* index.htmlの表示に formModelオブジェクトとdatalistオブジェクトが必要。
+	 * datalistオブジェクトは、メソッド内で作成。
+	 * formModelオブジェクトは、@ModelAttribute("formModel") Mydata mydata で、生成している。
+	 * @ModelAttributeの記述は、 mav.addAttribute("formModel", new Mydata()) と同等。*/
 	@RequestMapping(value = "/", method=RequestMethod.GET)
-	public ModelAndView index(ModelAndView mav) {
+	public ModelAndView index(
+			@ModelAttribute("formModel") MyData mydata,
+			ModelAndView mav) {
 		mav.setViewName("index");
 		Iterable<MyData> list = myDataRepository.findAll();
 		mav.addObject("msg", "this is sample content.");
 		mav.addObject("datalist", list);
 		return mav;
+	}
+
+	/* Viewで <form th:object="${formModel}>" を指定したので、formModelオブジェクトに
+	 * フォームデータが格納されてくる。ここでは、MyDataクラスを formModelオブジェクトとして指定している */
+	@RequestMapping(value = "/", method=RequestMethod.POST)
+	@Transactional(readOnly=false)
+	public ModelAndView form(
+			@ModelAttribute("formModel") MyData mydata,
+			ModelAndView mav) {
+		myDataRepository.saveAndFlush(mydata);
+		return new ModelAndView("redirect:/");
 	}
 	
 	@PostConstruct
