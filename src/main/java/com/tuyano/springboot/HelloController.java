@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,6 +40,28 @@ public class HelloController {
 	public ModelAndView form(
 			@ModelAttribute("formModel") MyData mydata,
 			ModelAndView mav) {
+		myDataRepository.saveAndFlush(mydata);
+		return new ModelAndView("redirect:/");
+	}
+	
+	@RequestMapping(value = "/edit/{id}", method=RequestMethod.GET)
+	public ModelAndView edit(
+			@PathVariable long id,
+			@ModelAttribute MyData mydata,
+			ModelAndView mav) {
+		mav.setViewName("edit");
+		mav.addObject("title", "edit mydata.");
+		MyData data = myDataRepository.findById(id);
+		mav.addObject("formModel", data);
+		return mav;
+	}
+	
+	@RequestMapping(value = "/edit", method = RequestMethod.POST)
+	@Transactional(readOnly = false)
+	public ModelAndView update(@ModelAttribute MyData mydata,
+			ModelAndView mav) {
+		/* データの更新の仕方は新規作成と同じsaveAndFlushで良い 
+		 * 同じidのデータが保存されていれば、更新になる */
 		myDataRepository.saveAndFlush(mydata);
 		return new ModelAndView("redirect:/");
 	}
