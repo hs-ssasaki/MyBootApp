@@ -18,7 +18,16 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Table(name="mydata")
 public class MyData {
 	/* エンティティのプロパティにアノテーションを設定して、バリデーションを定義できる
-	 * @NotNull, @NotEmpty, @Email, @Min, @Max */
+	 * バリデーションのアノテーションは、
+	 * javax.validation.constraintsパッケージと、org.hibernate.validatorが中心。
+	 * 
+	 * @NotNull, @NotEmpty, @Email, @Min, @Max, Digits(integer=5, fraction=10) 
+	 * @Future, @Old, @Size(min=1, max=10), @Pattern(regexp="[a-zA-Z]+", 
+	 * @NotEmpty, @Length(min=5, max=10), @Email, @CreditCardNumber, @EAN 
+	 * 
+	 * エラーメッセージの内容は、プロパティファイル ValidationMessages.properties で指定できる。
+	 * stsのプロパティエディタで開くと、日本語を自動的にユニコードエスケープしてくれる。
+	 * */
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column
