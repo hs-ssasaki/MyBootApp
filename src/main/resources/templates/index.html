@@ -11,12 +11,19 @@
 	tr { margin:5px; }
 	th { padding:5px; color:white; background:darkgray; }
 	td { padding:5px; color:black; background:#e0e0ff; }
+	.err { coler:red; }
 	</style>
 </head>
 <body>
 	<h1 th:text="#{content.title}">Hello page</h1>
-	<!-- th:object でフォームオブジェクトを指定する。この指定でviewとControllerが紐づく。 -->
+	<p th:text="${msg}"></p>
 	<form method="post"	action="/" th:object="${formModel}">
+		<ul>
+			<!-- #fields は、エンティティをバリデーションチェックした結果を格納したオブジェクト。
+			     detaildErrors() は、発生したエラー情報をリストにまとめて返すメソッド。 -->
+			<li th:each="error : ${#fields.detailedErrors()}"
+			 class="err" th:text="${error.message}" />
+		</ul>
 	<table>
 		<tr>
 			<td><label for="name">Name</label></td>

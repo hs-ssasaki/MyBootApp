@@ -1,12 +1,11 @@
 package com.tuyano.springboot;
 
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withUnauthorizedRequest;
-
 import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,15 +35,29 @@ public class HelloController {
 		return mav;
 	}
 
-	/* Viewで <form th:object="${formModel}>" を指定したので、formModelオブジェクトに
-	 * フォームデータが格納されてくる。ここでは、MyDataクラスを formModelオブジェクトとして指定している */
+	/* バリデーションチェックをしたいエンティティに、@Vlidated をつけて、有効化する。
+	 * BindResultは、アノテーションを使って値をバインドした結果を得る指定。
+	 * BindResultは、Errorインターフェースを継承するインターフェース。
+	 * （この場合は @ModelAttribute でフォームから MyData インスタンスを生成した際の結果）*/ 
 	@RequestMapping(value = "/", method=RequestMethod.POST)
 	@Transactional(readOnly=false)
 	public ModelAndView form(
-			@ModelAttribute("formModel") MyData mydata,
+			@ModelAttribute("formModel") @Validated MyData mydata,
+			BindingResult result,
 			ModelAndView mav) {
-		myDataRepository.saveAndFlush(mydata);
-		return new ModelAndView("redirect:/");
+		ModelAndView res = null;
+		// エラーのチェックは、hasErrors() メソッドでできる。
+		if (!result.hasErrors()) {
+			myDataRepository.saveAndFlush(mydata);
+			res = new ModelAndView("redirect:/");
+		} else {
+			mav.setViewName("index");
+			mav.addObject("msg", "sorry, error is occured...");
+			Iterable<MyData> list = myDataRepository.findAll();
+			mav.addObject("datalist", list);
+			res = mav;
+		}
+		return res;
 	}
 	
 	@RequestMapping(value = "/edit/{id}", method=RequestMethod.GET)
