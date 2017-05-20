@@ -59,18 +59,19 @@ public class MyDataDaoImpl implements MyDataDao<MyData> {
 		// ここでは、long型のid値でエンティティを検索するクエリを作るので、エンティティの型に合わせて型変換する。
 		//
 		// クエリパラメータは複数指定できる。
-		String qstr = "from MyData where id = :fid or name like :fname or mail like :fmail";
+		// 名前付きパラメータ以外に、?による番号指定のパラメータも使える
+		String qstr = "from MyData where id = ?1 or name like ?2 or mail like ?3";
 		Long fid = 0L;
 		try {
 			fid = Long.parseLong(fstr);
 		} catch(NumberFormatException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
-		// setParameter()のメソッドチェーンで処理するのが楽。
+		// setParameter()で、名前ではなく番号を指定する
 		Query query = entityManager.createQuery(qstr)
-				.setParameter("fid", fid)
-				.setParameter("fname", "%" + fstr + "%")
-				.setParameter("fmail", fstr + "@%");
+				.setParameter(1, fid)
+				.setParameter(2, "%" + fstr + "%")
+				.setParameter(3, fstr + "@%");
 		list = query.getResultList();
 		return list;
 	}
