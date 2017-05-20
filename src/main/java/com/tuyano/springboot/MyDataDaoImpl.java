@@ -7,6 +7,8 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
+import com.gargoylesoftware.htmlunit.javascript.host.intl.NumberFormat;
+
 @Repository
 public class MyDataDaoImpl implements MyDataDao<MyData> {
 	// シリアライズ処理を実装するクラスには、どの時点のどのクラスによってシリアライズされたのかを示すIDを宣言しておく
@@ -50,13 +52,25 @@ public class MyDataDaoImpl implements MyDataDao<MyData> {
 
 	@Override
 	public List<MyData> find(String fstr) {
-		List<MyData> list;
+		List<MyData> list = null;
 		// JPQLへのパラメータ設定方法。
 		// JPQLのクエリ文で、「:変数名」で、変数を指定できる。
 		// Query#setParameter(変数名, 値) で値を指定できる。
 		// ここでは、long型のid値でエンティティを検索するクエリを作るので、エンティティの型に合わせて型変換する。
-		String qstr = "from MyData where id = :fstr";
-		Query query = entityManager.createQuery(qstr).setParameter("fstr", Long.parseLong(fstr));
+		//
+		// クエリパラメータは複数指定できる。
+		String qstr = "from MyData where id = :fid or name like :fname or mail like :fmail";
+		Long fid = 0L;
+		try {
+			fid = Long.parseLong(fstr);
+		} catch(NumberFormatException e) {
+			e.printStackTrace();
+		}
+		// setParameter()のメソッドチェーンで処理するのが楽。
+		Query query = entityManager.createQuery(qstr)
+				.setParameter("fid", fid)
+				.setParameter("fname", "%" + fstr + "%")
+				.setParameter("fmail", fstr + "@%");
 		list = query.getResultList();
 		return list;
 	}
