@@ -47,7 +47,9 @@ public class MyData {
 	@Max(200)
 	private Integer age;
 	
+	// 作成したバリデーション @Phone を使う。
 	@Column(nullable = true)
+	@Phone
 	private String memo;
 
 	public long getId() {
