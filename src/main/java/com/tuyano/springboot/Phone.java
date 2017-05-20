@@ -46,4 +46,7 @@ public @interface Phone {
 	String message() default "please input a phone number.";
 	Class<?>[] groups() default{};
 	Class<? extends Payload>[] payload() default {};
+	// 引数のあるアノテーションの定義の仕方。
+	// メソッドでキーの型とキーの名前を指定する。
+	boolean onlyNumber() default false;
 }

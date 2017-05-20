@@ -49,7 +49,7 @@ public class MyData {
 	
 	// 作成したバリデーション @Phone を使う。
 	@Column(nullable = true)
-	@Phone
+	@Phone(onlyNumber=true)
 	private String memo;
 
 	public long getId() {
