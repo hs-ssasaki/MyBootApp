@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -14,20 +16,18 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+/* @NamedQuery というアノテーションで、クエリ文字列に名前をつけられる
+ * これを レポジトリではなくエンティティに記述しておくことで、
+ * エンティティを操作するのに必要なものをすべてエンティティにまとめられる */
 @Entity
 @Table(name="mydata")
+@NamedQueries(
+	@NamedQuery(
+		name="findWithName",
+		query="from MyData where name like :fname"
+	)
+)
 public class MyData {
-	/* エンティティのプロパティにアノテーションを設定して、バリデーションを定義できる
-	 * バリデーションのアノテーションは、
-	 * javax.validation.constraintsパッケージと、org.hibernate.validatorが中心。
-	 * 
-	 * @NotNull, @NotEmpty, @Email, @Min, @Max, Digits(integer=5, fraction=10) 
-	 * @Future, @Old, @Size(min=1, max=10), @Pattern(regexp="[a-zA-Z]+", 
-	 * @NotEmpty, @Length(min=5, max=10), @Email, @CreditCardNumber, @EAN 
-	 * 
-	 * エラーメッセージの内容は、プロパティファイル ValidationMessages.properties で指定できる。
-	 * stsのプロパティエディタで開くと、日本語を自動的にユニコードエスケープしてくれる。
-	 * */
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column
