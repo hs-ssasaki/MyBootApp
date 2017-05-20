@@ -1,5 +1,8 @@
 package com.tuyano.springboot;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -54,6 +58,13 @@ public class MyData {
 	@Phone(onlyNumber=true)
 	private String memo;
 
+	// こちらには @OneToMany を指定する。
+	// cascade は、伝播させるオペレーションの種類を指定するキー。
+	// CascadeType.ALL は、所有者側のエンティティクラスのpersist，remove，merge，およびrefreshの操作を関連先にカスケードする。
+	@OneToMany(cascade=CascadeType.ALL)
+	@Column(nullable = true)
+	private List<MsgData> msgDatas;
+	
 	public long getId() {
 		return id;
 	}
@@ -92,5 +103,13 @@ public class MyData {
 
 	public void setMemo(String memo) {
 		this.memo = memo;
+	}
+
+	public List<MsgData> getMsgDatas() {
+		return msgDatas;
+	}
+
+	public void setMsgDatas(List<MsgData> msgDatas) {
+		this.msgDatas = msgDatas;
 	}
 }
