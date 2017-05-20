@@ -38,17 +38,25 @@ public class HelloController {
 	/* index.htmlの表示に datalistオブジェクトが必要。
 	 * datalistオブジェクトは、メソッド内で作成。 */
 	@RequestMapping(value = "/", method=RequestMethod.GET)
-	public ModelAndView index(
-			@ModelAttribute("formModel") MyData mydata,
-			ModelAndView mav) {
+	public ModelAndView index(ModelAndView mav) {
 		mav.setViewName("index");
-		// daoインスタンスのメソッドを呼び出してデータを取得
-		Iterable<MyData> list = dao.getAll();
+		// @QueryでJPQLを指定した、レポジトリのメソッドを実行
+		Iterable<MyData> list = myDataRepository.findAllOrderByName();
 		mav.addObject("msg", "MyData sample");
 		mav.addObject("datalist", list);
 		return mav;
 	}
 
+	@RequestMapping(value = "/age", method=RequestMethod.GET)
+	public ModelAndView age(ModelAndView mav) {
+		mav.setViewName("index");
+		// @QueryでJPQLを指定した、レポジトリのメソッドを実行（引数つき）
+		Iterable<MyData> list = myDataRepository.findByAge(10, 40);
+		mav.addObject("msg", "MyData sample");
+		mav.addObject("datalist", list);
+		return mav;
+	}
+	
 	@RequestMapping(value = "/find", method = RequestMethod.GET)
 	public ModelAndView find(ModelAndView mav) {
 		mav.setViewName("find");

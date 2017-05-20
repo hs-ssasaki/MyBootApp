@@ -18,7 +18,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 /* @NamedQuery というアノテーションで、クエリ文字列に名前をつけられる
  * これを レポジトリではなくエンティティに記述しておくことで、
- * エンティティを操作するのに必要なものをすべてエンティティにまとめられる */
+ * エンティティを操作するのに必要なものをすべてエンティティにまとめられる。
+ * @NamedQueryは、エンティティにクエリを持たせるやり方。
+ * 一方、@Queryは、レポジトリで使え、レポジトリにクエリを持たせるやり方 */
 @Entity
 @Table(name="mydata")
 @NamedQueries(
