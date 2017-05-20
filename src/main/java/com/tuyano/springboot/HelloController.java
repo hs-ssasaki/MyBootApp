@@ -1,10 +1,15 @@
 package com.tuyano.springboot;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,6 +49,36 @@ public class HelloController {
 		return mav;
 	}
 
+	@RequestMapping(value = "/find", method = RequestMethod.GET)
+	public ModelAndView find(ModelAndView mav) {
+		mav.setViewName("find");
+		mav.addObject("title", "Find Page");
+		mav.addObject("msg", "MyData sample");
+		mav.addObject("value", "");
+		Iterable<MyData> list = dao.getAll();
+		mav.addObject("datalist", list);
+		return mav;
+	}
+
+	// @RequestParamじゃなくてもフォームのデータは受け取れる。
+	// String param = HttpServletRequest#getParameter(コントロール名)とすればいい。
+	// メソッド引数に、@RequestParam(コントロール名)String param とするのと同じ。
+	@RequestMapping(value="/find", method=RequestMethod.POST)
+	public ModelAndView search(ModelAndView mav, HttpServletRequest httpServletRequest) {
+		mav.setViewName("find");
+		String param = httpServletRequest.getParameter("fstr");
+		if (param == "") {
+			mav =  new ModelAndView("redirect:/find");
+		} else {
+			mav.addObject("title", "Find result");
+			mav.addObject("msg", "「" + param + "」の検索結果");
+			mav.addObject("value", param);
+			List<MyData> list = dao.find(param);
+			mav.addObject("datalist", list);
+		}
+		return mav;
+	}
+	
 	@PostConstruct
 	public void init() {
 		// daoインスタンスを生成
