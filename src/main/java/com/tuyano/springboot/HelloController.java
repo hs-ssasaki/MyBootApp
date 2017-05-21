@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,6 +21,9 @@ public class HelloController {
 	
 	@Autowired
 	MyDataService myDataService;
+
+	@Autowired
+	MyDataBean myDataBean;
 	
 	@RequestMapping(value = "/", method=RequestMethod.GET)
 	public ModelAndView index(ModelAndView mav) {
@@ -57,6 +61,19 @@ public class HelloController {
 			List<MyData> list = myDataService.find(param);
 			mav.addObject("datalist", list);
 		}
+		return mav;
+	}
+
+	@RequestMapping("/{id}")
+	public ModelAndView indexById(@PathVariable long id,
+			ModelAndView mav) {
+		mav.setViewName("pickup");
+		mav.addObject("title", "Pickup Page");
+		String table = "<table>"
+				+ myDataBean.getTableTagById(id)
+				+ "</table>";
+		mav.addObject("msg", "pickup data id = " + id);
+		mav.addObject("data", table);
 		return mav;
 	}
 	
