@@ -2,112 +2,65 @@ package com.tuyano.springboot;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import com.tuyano.springboot.repositories.MyDataRepository;
+
+import com.tuyano.springboot.repositories.MyDataMongoRepository;
 
 @Controller
 public class HelloController {
-
-	@Autowired
-	MyDataRepository myDataRepository;
 	
 	@Autowired
-	MyDataService myDataService;
-
-	@Autowired
-	MyDataBean myDataBean;
+	MyDataMongoRepository repository;
 	
-	@RequestMapping(value = "/", method=RequestMethod.GET)
+	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView index(ModelAndView mav) {
 		mav.setViewName("index");
 		mav.addObject("title", "Find Page");
-		mav.addObject("msg", "MyData sample");
-		// DAOではなくサービスを呼び出すように変更する
-		Iterable<MyData> list = myDataService.getAll();
+		mav.addObject("msg", "MyDataMongo sample");
+		Iterable<MyDataMongo> list = repository.findAll();
 		mav.addObject("datalist", list);
 		return mav;
 	}
 
+	@RequestMapping(value = "/", method = RequestMethod.POST)
+	public ModelAndView form(
+			@RequestParam("name")String name,
+			@RequestParam("memo")String memo,
+			ModelAndView mav) {
+		MyDataMongo mydata = new MyDataMongo(name, memo);
+		repository.save(mydata);
+		return new ModelAndView("redirect:/");
+	}
+	
 	@RequestMapping(value = "/find", method=RequestMethod.GET)
 	public ModelAndView age(ModelAndView mav) {
 		mav.setViewName("find");
 		mav.addObject("title", "Find Page");
-		mav.addObject("msg", "MyData sample");
-		// DAOではなくサービスを呼び出すように変更する
-		Iterable<MyData> list = myDataService.getAll();
+		mav.addObject("msg", "MyDataMongo sample");
+		mav.addObject("value", "");
+		List<MyDataMongo> list = repository.findAll();
 		mav.addObject("datalist", list);
 		return mav;
 	}
 
 	@RequestMapping(value="/find", method=RequestMethod.POST)
-	public ModelAndView search(ModelAndView mav, HttpServletRequest httpServletRequest) {
+	public ModelAndView search(ModelAndView mav, @RequestParam("find") String param) {
 		mav.setViewName("find");
-		String param = httpServletRequest.getParameter("fstr");
 		if (param == "") {
 			mav =  new ModelAndView("redirect:/find");
 		} else {
 			mav.addObject("title", "Find result");
 			mav.addObject("msg", "「" + param + "」の検索結果");
 			mav.addObject("value", param);
-			// DAOではなくサービスを呼び出すように変更する
-			List<MyData> list = myDataService.find(param);
+			List<MyDataMongo> list = repository.findByName(param);
 			mav.addObject("datalist", list);
 		}
 		return mav;
 	}
-
-	@RequestMapping("/{id}")
-	public ModelAndView indexById(@PathVariable long id,
-			ModelAndView mav) {
-		mav.setViewName("pickup");
-		mav.addObject("title", "Pickup Page");
-		String table = "<table>"
-				+ myDataBean.getTableTagById(id)
-				+ "</table>";
-		mav.addObject("msg", "pickup data id = " + id);
-		mav.addObject("data", table);
-		return mav;
-	}
-
-	@RequestMapping(value = "/page/{num}", method=RequestMethod.GET)
-	public ModelAndView page(@PathVariable Integer num, ModelAndView mav) {
-		mav.setViewName("index");
-		mav.addObject("title", "Page sample");
-		mav.addObject("msg", "Page sample");
-		mav.addObject("pagenumber", num);
-		Page<MyData> page = myDataService.getMyDataInPage(num);
-		mav.addObject("datalist", page);
-		return mav;
-	}
 	
-	@PostConstruct
-	public void init() {
-		MyData data1 = new MyData();
-		data1.setName("Tuyano");
-		data1.setAge(23);
-		data1.setMail("aaa@xxdd");
-		data1.setMemo("080888888");
-		MyData data2 = new MyData();
-		data2.setName("Muyano");
-		data2.setAge(42);
-		data2.setMail("afe@xxdd");
-		data2.setMemo("090999999");
-		MyData data3 = new MyData();
-		data3.setName("Yuyano");
-		data3.setAge(45);
-		data3.setMail("dijfe@xxdd");
-		data3.setMemo("555555555");
-		myDataRepository.saveAndFlush(data1);
-		myDataRepository.saveAndFlush(data2);
-		myDataRepository.saveAndFlush(data3);
-	}
 }

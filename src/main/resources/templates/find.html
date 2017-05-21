@@ -15,13 +15,13 @@
 	</style>
 </head>
 <body>
-	<h1 th:text="#{content.title}">Hello page</h1>
+	<h1 th:text="${title}">Find page</h1>
 	<p th:text="${msg}"></p>
 	<form action="/find" method="post">
 	<table>
 		<tr>
 		<td>FIND:</td>
-		<td><input type="text" name="fstr" size="20" th:value="${value}"/></td>
+		<td><input type="text" name="find" size="20" th:value="${value}"/></td>
 		</tr>
 		<tr>
 		<td></td>
@@ -31,12 +31,11 @@
 	</form>
 	<hr/>
 	<table>
-		<tr><th>ID</th><th>Name</th><th>Mail</th><th>Age</th></tr>
+		<tr><th>Name</th><th>Memo</th><th>Date</th></tr>
 		<tr th:each="obj : ${datalist}">
-			<td th:text="${obj.id}"></td>
 			<td th:text="${obj.name}"></td>
-			<td th:text="${obj.mail}"></td>
-			<td th:text="${obj.age}"></td>
+			<td th:text="${obj.memo}"></td>
+			<td th:text="${obj.date}"></td>
 		</tr>
 	</table>	
 </body>
