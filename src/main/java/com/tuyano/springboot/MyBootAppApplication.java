@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MyBootAppApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MyBootAppApplication.class, args);
+		// MySampleBean で、ApplicationArgument を利用することにしたので、
+		// ここで引数を渡す。
+		SpringApplication.run(MyBootAppApplication.class, new String[]{"5"});
 	}
 }
