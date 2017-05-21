@@ -8,13 +8,23 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import com.tuyano.springboot.repositories.MyDataRepository;
 
 /* DAO を使って DBアクセスしていたコードから、サービスBeanを使ってアクセスする形に変更する */
 @Service
 public class MyDataService {
 	@PersistenceContext
 	EntityManager entityManager;
+	
+	@Autowired
+	MyDataRepository myDataRepository;
+
+	private static final int PAGE_SIZE = 2; // 1ページあたりのエンティティ数
 	
 	public List<MyData> getAll() {
 		@SuppressWarnings("unchecked")
@@ -34,5 +44,19 @@ public class MyDataService {
 		List<MyData> list = null;
 		list = (List<MyData>) entityManager.createQuery(query).getResultList();
 		return list;
+	}
+
+	/*
+	 * ページネーションするには、ListのサブクラスであるPageコレクションの要素として
+	 * エンティティをViewに返す。
+	 * pageコレクションを作るには、
+	 * （１）PageRequestインスタンスを作成する （引数には、ページ番号と、１ページあたりのエンティティ数を指定する）
+	 * （２）レポジトリのメソッドの引数に、PageRequestインスタンスを渡す
+	 * PageはListのサブクラスなので、ViewはListを処理するように実装しておけば表示はできる。
+	 * （１）で指定したページ番号に収まるエンティティが返る
+	 */
+	public Page<MyData> getMyDataInPage(Integer pageNumber) {
+		PageRequest pageRequest = new PageRequest(pageNumber - 1, PAGE_SIZE);
+		return myDataRepository.findAll(pageRequest);
 	}
 }

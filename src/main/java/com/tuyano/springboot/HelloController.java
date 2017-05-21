@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +16,7 @@ import com.tuyano.springboot.repositories.MyDataRepository;
 
 @Controller
 public class HelloController {
-	
+
 	@Autowired
 	MyDataRepository myDataRepository;
 	
@@ -74,6 +75,17 @@ public class HelloController {
 				+ "</table>";
 		mav.addObject("msg", "pickup data id = " + id);
 		mav.addObject("data", table);
+		return mav;
+	}
+
+	@RequestMapping("/page/{num}")
+	public ModelAndView page(@PathVariable Integer num, ModelAndView mav) {
+		mav.setViewName("index");
+		mav.addObject("title", "Page sample");
+		mav.addObject("msg", "Page sample");
+		mav.addObject("pagenumber", num);
+		Page<MyData> page = myDataService.getMyDataInPage(num);
+		mav.addObject("datalist", page);
 		return mav;
 	}
 	
