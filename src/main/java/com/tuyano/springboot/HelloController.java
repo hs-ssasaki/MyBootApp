@@ -78,7 +78,7 @@ public class HelloController {
 		return mav;
 	}
 
-	@RequestMapping("/page/{num}")
+	@RequestMapping(value = "/page/{num}", method=RequestMethod.GET)
 	public ModelAndView page(@PathVariable Integer num, ModelAndView mav) {
 		mav.setViewName("index");
 		mav.addObject("title", "Page sample");
