@@ -17,7 +17,9 @@ public class MyDataService {
 	EntityManager entityManager;
 	
 	public List<MyData> getAll() {
-		return (List<MyData>)entityManager.createQuery("from MyData").getResultList();
+		@SuppressWarnings("unchecked")
+		List<MyData> resultList = (List<MyData>)entityManager.createQuery("from MyData").getResultList();
+		return resultList;
 	}
 	
 	public MyData get(int num) {

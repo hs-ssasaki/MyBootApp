@@ -10,12 +10,25 @@ import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+
+/* 
+ * RestService で、JSONではなくXMLで返却したい場合は、
+ * (1) pom.xmlに以下を記述し、Jackson DataFormat XMLライブラリをロード
+ * 		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+		</dependency>
+ * (2) エンティティクラスに、@XmlRootElement を付与。これでこのエンティティがXMLデータのルートとなるエレメントであることを示す。
+ * 以上で、RestControllerでアクセスしてreturnされたオブジェクトは、全てXML形式のテキストに変わる。
+ * */
 @Entity
 @Table(name="mydata")
+@XmlRootElement
 public class MyData {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
