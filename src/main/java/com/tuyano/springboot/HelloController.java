@@ -3,14 +3,10 @@ package com.tuyano.springboot;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,55 +18,31 @@ public class HelloController {
 	@Autowired
 	MyDataRepository myDataRepository;
 	
-	// @PersistenceContext でEntityManagerのインスタンスを取得する
-	// Spring Bootでは、EntityManagerのインスタンスは起動時に登録されており、
-	// このアノテーションでインジェクションするのが基本
-	//
-	// MyDataDaoImpl の方で @PersistenceContext を記述しても動作はする。
-	// しかし、@PersistenceContextは、１クラス（EntityManager)につき１インスタンスしか用意されない。
-	// 以降の手順で、DAOを複数用意するため、ここでは、コントローラで@PersistenceContextし、それをDAOに渡している。
-	// DAOを１クラスにまとめるのであれば、@PersistenceContextは、DAO側に記載してもよい。
-	@PersistenceContext
-	EntityManager entityManager;
+	@Autowired
+	MyDataService myDataService;
 	
-	MyDataDaoImpl dao;
-	
-	/* index.htmlの表示に datalistオブジェクトが必要。
-	 * datalistオブジェクトは、メソッド内で作成。 */
 	@RequestMapping(value = "/", method=RequestMethod.GET)
 	public ModelAndView index(ModelAndView mav) {
 		mav.setViewName("index");
-		// @QueryでJPQLを指定した、レポジトリのメソッドを実行
-		Iterable<MyData> list = myDataRepository.findAllOrderByName();
+		mav.addObject("title", "Find Page");
 		mav.addObject("msg", "MyData sample");
+		// DAOではなくサービスを呼び出すように変更する
+		Iterable<MyData> list = myDataService.getAll();
 		mav.addObject("datalist", list);
 		return mav;
 	}
 
-	@RequestMapping(value = "/age", method=RequestMethod.GET)
+	@RequestMapping(value = "/find", method=RequestMethod.GET)
 	public ModelAndView age(ModelAndView mav) {
-		mav.setViewName("index");
-		// @QueryでJPQLを指定した、レポジトリのメソッドを実行（引数つき）
-		Iterable<MyData> list = myDataRepository.findByAge(10, 40);
-		mav.addObject("msg", "MyData sample");
-		mav.addObject("datalist", list);
-		return mav;
-	}
-	
-	@RequestMapping(value = "/find", method = RequestMethod.GET)
-	public ModelAndView find(ModelAndView mav) {
 		mav.setViewName("find");
 		mav.addObject("title", "Find Page");
 		mav.addObject("msg", "MyData sample");
-		mav.addObject("value", "");
-		Iterable<MyData> list = dao.getAll();
+		// DAOではなくサービスを呼び出すように変更する
+		Iterable<MyData> list = myDataService.getAll();
 		mav.addObject("datalist", list);
 		return mav;
 	}
 
-	// @RequestParamじゃなくてもフォームのデータは受け取れる。
-	// String param = HttpServletRequest#getParameter(コントロール名)とすればいい。
-	// メソッド引数に、@RequestParam(コントロール名)String param とするのと同じ。
 	@RequestMapping(value="/find", method=RequestMethod.POST)
 	public ModelAndView search(ModelAndView mav, HttpServletRequest httpServletRequest) {
 		mav.setViewName("find");
@@ -81,7 +53,8 @@ public class HelloController {
 			mav.addObject("title", "Find result");
 			mav.addObject("msg", "「" + param + "」の検索結果");
 			mav.addObject("value", param);
-			List<MyData> list = dao.find(param);
+			// DAOではなくサービスを呼び出すように変更する
+			List<MyData> list = myDataService.find(param);
 			mav.addObject("datalist", list);
 		}
 		return mav;
@@ -89,8 +62,6 @@ public class HelloController {
 	
 	@PostConstruct
 	public void init() {
-		// daoインスタンスを生成
-		dao = new MyDataDaoImpl(entityManager);
 		MyData data1 = new MyData();
 		data1.setName("Tuyano");
 		data1.setAge(23);
