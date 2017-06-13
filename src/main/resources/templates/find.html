@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>find page</title>
+	<meta http-equiv="Content-Type"
+		content="text/html" charset="UTF-8"/>
+	<style>
+	h1 { font-size:18pt; font-weight:bold; color:gray;}
+	body { font-size:13pt; color:gray; margin:5px 25px; }
+	pre { font-size:13pt; color:gray; padding:5px 10px; border:1px solid gray; }
+	tr { margin:5px; }
+	th { padding:5px; color:white; background:darkgray; }
+	td { padding:5px; color:black; background:#e0e0ff; }
+	.err { coler:red; }
+	</style>
+</head>
+<body>
+	<h1 th:text="${title}">Find page</h1>
+	<p th:text="${msg}"></p>
+	<form action="/find" method="post">
+	<table>
+		<tr>
+		<td>FIND:</td>
+		<td><input type="text" name="find" size="20" th:value="${value}"/></td>
+		</tr>
+		<tr>
+		<td></td>
+		<td><input type="submit" /></td>
+		</tr>
+	</table>
+	</form>
+	<hr/>
+	<table>
+		<tr><th>Name</th><th>Memo</th><th>Date</th></tr>
+		<tr th:each="obj : ${datalist}">
+			<td th:text="${obj.name}"></td>
+			<td th:text="${obj.memo}"></td>
+			<td th:text="${obj.date}"></td>
+		</tr>
+	</table>	
+</body>
+</html>
